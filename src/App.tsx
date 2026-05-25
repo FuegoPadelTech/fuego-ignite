@@ -17,10 +17,8 @@ function WaitlistProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const fetchCount = async () => {
-      const { count: total } = await supabase
-        .from('ignite_waitlist')
-        .select('*', { count: 'exact', head: true });
-      setCount(total ?? 0);
+      const { data, error } = await supabase.rpc('get_ignite_waitlist_count');
+      setCount(error ? 0 : (data ?? 0));
     };
     fetchCount();
   }, []);
@@ -1039,10 +1037,8 @@ function PlayerDNASection() {
         })
         .then(() => {});
 
-      // Get waitlist position
-      const { count: wlCount } = await supabase
-        .from('ignite_waitlist')
-        .select('*', { count: 'exact', head: true });
+      // Get waitlist position via secure RPC
+      const { data: wlCount } = await supabase.rpc('get_ignite_waitlist_count');
       const position = (wlCount ?? 0) + 300;
 
       // Build profile text
